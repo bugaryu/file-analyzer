@@ -7,7 +7,6 @@ from datetime import datetime
 
 # デフォルトの対象ディレクトリを指定
 DEFAULT_TARGET_DIR="/path/to/your/directory"
-DEFAULT_TARGET_DIR = '/path/to/your/directory' # gitignoreline
 
 # コマンドライン引数から対象ディレクトリを取得
 target_dir = sys.argv[1] if len(sys.argv) > 1 else DEFAULT_TARGET_DIR
