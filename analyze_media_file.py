@@ -37,10 +37,16 @@ def get_video_info(file):
     except Exception:
         return "", ""
 
+def human_readable_size(size, decimal_places=2):
+    for unit in ['B', 'KB', 'MB', 'GB', 'TB']:
+        if size < 1024:
+            return f"{size:.{decimal_places}f} {unit}"
+        size /= 1024
+
 with open(OUTPUT_FILE, 'w', newline='', encoding='utf-8') as csvfile:
     writer = csv.writer(csvfile)
     writer.writerow([target_dir])
-    writer.writerow(["フルパス", "フォルダ1", "フォルダ2", "フォルダ3", "フォルダ4", "ファイル名", "ファイル形式", "解像度", "ファイルサイズ", "動画時間"])
+    writer.writerow(["path", "フォルダ1", "フォルダ2", "フォルダ3", "フォルダ4", "ファイル名", "形式", "解像度", "サイズ (byte)", "サイズ (GB, MB)", "動画時間 (s)"])
 
     for root, dirs, files in os.walk(target_dir):
         for file in files:
@@ -48,6 +54,7 @@ with open(OUTPUT_FILE, 'w', newline='', encoding='utf-8') as csvfile:
             filename = os.path.basename(file_path)
             filetype = filename.split(".")[-1].lower() if "." in filename else ""
             filesize = os.path.getsize(file_path)
+            human_filesize = human_readable_size(filesize)
             
             if filetype in VIDEO_EXTENSIONS:
                 resolution, duration = get_video_info(file_path)
@@ -65,4 +72,4 @@ with open(OUTPUT_FILE, 'w', newline='', encoding='utf-8') as csvfile:
                 folder_parts[3] = os.sep.join(folder_parts[3:])  # 余った部分をフォルダ4に結合
                 folder_parts = folder_parts[:4]
 
-            writer.writerow([root_relative] + folder_parts + [filename, filetype, resolution, filesize, duration])
+            writer.writerow([root_relative] + folder_parts + [filename, filetype, resolution, filesize, human_filesize, duration])
