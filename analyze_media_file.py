@@ -1,11 +1,16 @@
 import os
 import csv
 import cv2
+import sys
 from PIL import Image
 from datetime import datetime
 
-# 対象ディレクトリを指定
-TARGET_DIR="/path/to/your/directory"
+# デフォルトの対象ディレクトリを指定
+DEFAULT_TARGET_DIR="/path/to/your/directory"
+DEFAULT_TARGET_DIR = '/path/to/your/directory' # gitignoreline
+
+# コマンドライン引数から対象ディレクトリを取得
+target_dir = sys.argv[1] if len(sys.argv) > 1 else DEFAULT_TARGET_DIR
 
 # 出力ファイルを指定
 timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
@@ -35,10 +40,10 @@ def get_video_info(file):
 
 with open(OUTPUT_FILE, 'w', newline='', encoding='utf-8') as csvfile:
     writer = csv.writer(csvfile)
-    writer.writerow([TARGET_DIR])
+    writer.writerow([target_dir])
     writer.writerow(["フルパス", "フォルダ1", "フォルダ2", "フォルダ3", "フォルダ4", "ファイル名", "ファイル形式", "解像度", "ファイルサイズ", "動画時間"])
 
-    for root, dirs, files in os.walk(TARGET_DIR):
+    for root, dirs, files in os.walk(target_dir):
         for file in files:
             file_path = os.path.join(root, file)
             filename = os.path.basename(file_path)
@@ -53,7 +58,7 @@ with open(OUTPUT_FILE, 'w', newline='', encoding='utf-8') as csvfile:
             else:
                 continue  # 動画、画像ファイル以外はスキップ
 
-            root_relative = os.path.relpath(file_path, TARGET_DIR)
+            root_relative = os.path.relpath(file_path, target_dir)
             folder_parts = root_relative.split(os.sep)[:-1] # ファイル名を除いた部分を取得 
             if len(folder_parts) < 4:
                 folder_parts += [""] * (4 - len(folder_parts))  # フォルダが4つ未満の場合は空文字で埋める
