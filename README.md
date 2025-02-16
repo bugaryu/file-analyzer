@@ -12,13 +12,17 @@ pip install -r requirements.txt
 
 ## 使用方法
 
-1. `analyze_file.py` スクリプトを実行します。
+1. `analyze_media_file.py` スクリプトを実行します。対象ディレクトリを引数として指定することもできます。
+    ```bash
+    python analyze_media_file.py /path/to/your/directory
+    ```
+    引数を指定しない場合、デフォルトのディレクトリが使用されます。
 2. スクリプトは指定されたディレクトリ内のサブディレクトリも含めてすべての画像および動画ファイルを検索し、情報を収集します。
-3. 収集された情報は `file_info.csv` ファイルに出力されます。
+3. 収集された情報は `file_info_<timestamp>.csv` ファイルに出力されます。
 
 ## 出力例
 
-`file_info.csv` ファイルには以下のような情報が含まれます:
+`file_info_<timestamp>.csv` ファイルには以下のような情報が含まれます:
 
 ```
 フルパス, フォルダ1, フォルダ2, フォルダ3, フォルダ4, ファイル名, ファイル形式, 解像度, ファイルサイズ, 動画時間
