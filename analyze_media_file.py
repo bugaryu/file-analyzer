@@ -9,7 +9,7 @@ from datetime import datetime
 DEFAULT_TARGET_DIR="/path/to/your/directory"
 
 # コマンドライン引数から対象ディレクトリを取得
-target_dir = sys.argv[1] if len(sys.argv) > 1 else DEFAULT_TARGET_DIR
+target_dir = sys.argv[1] if len(sys.argv) > 1 and sys.argv[1] else DEFAULT_TARGET_DIR
 
 # 出力ファイルを指定
 timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
@@ -18,6 +18,7 @@ OUTPUT_FILE = f"file_info_{timestamp}.csv"
 # サポートされているファイル拡張子
 VIDEO_EXTENSIONS = ['mp4', 'mov', 'avi', 'mkv']
 IMAGE_EXTENSIONS = ['jpg', 'jpeg', 'png', 'gif', 'bmp']
+IGNORE_PATH = ['folder']
 
 def get_image_resolution(file):
     try:
@@ -46,9 +47,14 @@ def human_readable_size(size, decimal_places=2):
 with open(OUTPUT_FILE, 'w', newline='', encoding='utf-8') as csvfile:
     writer = csv.writer(csvfile)
     writer.writerow([target_dir])
-    writer.writerow(["path", "フォルダ1", "フォルダ2", "フォルダ3", "フォルダ4", "ファイル名", "形式", "解像度", "サイズ (byte)", "サイズ (GB, MB)", "動画時間 (s)"])
+    writer.writerow(["no", "path", "フォルダ1", "フォルダ2", "フォルダ3", "フォルダ4", "ファイル名", "形式", "解像度", "サイズ (byte)", "サイズ (GB, MB)", "動画時間 (s)"])
 
+    line = 0
     for root, dirs, files in os.walk(target_dir):
+        
+        # IGNORE_PATH に記載されたフォルダパス以下の階層は分析しない
+        dirs[:] = [d for d in dirs if d not in IGNORE_PATH]
+
         for file in files:
             file_path = os.path.join(root, file)
             filename = os.path.basename(file_path)
@@ -71,5 +77,7 @@ with open(OUTPUT_FILE, 'w', newline='', encoding='utf-8') as csvfile:
             else:
                 folder_parts[3] = os.sep.join(folder_parts[3:])  # 余った部分をフォルダ4に結合
                 folder_parts = folder_parts[:4]
+            
+            line += 1
+            writer.writerow([line, root_relative] + folder_parts + [filename, filetype, resolution, filesize, human_filesize, duration])
 
-            writer.writerow([root_relative] + folder_parts + [filename, filetype, resolution, filesize, human_filesize, duration])
